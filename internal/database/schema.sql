@@ -1,0 +1,5 @@
+CREATE TABLE products (
+  sku TEXT PRIMARY KEY NOT NULL,
+  title TEXT NOT NULL,
+  priceCents INTEGER NOT NULL 
+)

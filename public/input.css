@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@source "../templates/**/*";
+
+button, a {
+    @apply border border-white p-2 rounded-xl transition-all duration-500 hover:bg-white hover:text-black cursor-pointer;
+}

@@ -1,0 +1,27 @@
+package templates
+
+import "github.com/lunai-monster/lunar-pos/internal/database/sqlc"
+
+templ ProductForm(product *sqlc.Product) {
+	if product == nil {
+		<form action="/products" method="post" x-target="products" class="flex flex-col gap-2">
+			<label class="text-2xl">Title</label>
+			<input class="border border-white rounded-md" type="text" name="Title"/>
+			<label>Price in Cents</label>
+			<input class="border border-white rounded-md" type="number" name="Pricecents"/>
+			<label>SKU</label>
+			<input class="border border-white rounded-md" type="text" name="Sku"/>
+			<button>Submit</button>
+		</form>
+	} else {
+		<form action={"/products/" + product.Sku} method="put" x-target="products product-form" x-target.422="product-form" x-target.error="product-form" class="flex flex-col gap-2">
+			<label class="text-2xl">Title</label>
+			<input class="border border-white rounded-md" type="text" name="Title" value={product.Title}/>
+			<label>Price in Cents</label>
+			<input class="border border-white rounded-md" type="number" name="Pricecents" value={product.Pricecents}/>
+			<label>SKU</label>
+			<input class="border border-white rounded-md" type="text" name="Sku" value={product.Sku}/>
+			<button>Update</button>
+		</form>
+	}
+}

@@ -1,0 +1,68 @@
+version: '3'
+
+vars:
+  DB_URL: file://db.db
+  SCHEMA_FILE: ./internal/database/schema.sql
+  HCL_FILE: ./internal/database/schema.hcl
+  DEV_URL: "sqlite://dev?mode=memory"
+
+tasks:
+  # --- Atlas Schema Inspection ---
+  schema:inspect:
+    desc: Exports the SQL schema to HCL format
+    cmds:
+      - atlas schema inspect -u "file://{{.SCHEMA_FILE}}" --dev-url "{{.DEV_URL}}" > {{.HCL_FILE}}
+
+  # --- Sub-tasks of Preparation ---
+  gen:sqlc:
+    desc: Generates Go code from SQL
+    cmds:
+      - sqlc generate
+
+  gen:templ:
+    desc: Generates Go files from Templ
+    cmds:
+      - templ generate
+
+  gen:tailwind:
+    desc: Generates minified Tailwind CSS
+    cmds:
+      - tailwindcss -i public/input.css -o public/output.css --minify
+
+  # --- Migration ---
+  migrate:
+    desc: Synchronizes the schema with the database using Atlas
+    deps: [schema:inspect, gen:sqlc]
+    cmds:
+      - atlas schema apply -u {{.DB_URL}} --to file://{{.HCL_FILE}} --dev-url {{.DEV_URL}}
+
+  # --- Development Mode ---
+  dev:
+    desc: Starts the complete development environment
+    cmds:
+      - cmd: go run scripts/dev.go
+        ignore_error: true
+    parallel: true
+
+  watch:templ:
+    internal: true
+    cmds:
+      - templ generate --watch
+
+  watch:tailwind:
+    internal: true
+    cmds:
+      - tailwindcss -i public/input.css -o public/output.css --watch
+
+  watch:air:
+    internal: true
+    cmds:
+      - air
+
+  # --- Production Build ---
+  build:
+    desc: Generates the static and optimized binary for production
+    deps: [gen:sqlc, gen:templ, gen:tailwind]
+    cmds:
+      - go build -o bin/app main.go
+
