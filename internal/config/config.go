@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -15,13 +16,16 @@ type Config struct {
 }
 
 func NewConfig() (*Config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
-	}
+	_ = godotenv.Load()
+
 	cfg := &Config{
 		Port:  os.Getenv("PORT"),
 		DBURL: os.Getenv("DB_URL"),
 	}
+
+	if cfg.Port == "" || cfg.DBURL == "" {
+		return nil, fmt.Errorf("missing required environment variables")
+	}
+
 	return cfg, nil
 }
