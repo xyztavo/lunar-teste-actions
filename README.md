@@ -1,3 +1,8 @@
+this is just a test project that i am doing to learn to host stuff in a vps, it already works, you can test it at
+https://test.lunai.monster
+but i will now be trying to use docker and github actions to automatize the building and deploying workflow
+
+
 # lunar stack
 this is a monolith stack that scales well and in the same time it has a great developer experience.
 
